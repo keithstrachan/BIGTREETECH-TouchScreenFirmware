@@ -6,7 +6,7 @@
     #define STRING_MOVE                   "Move"
     #define STRING_HOME                   "Home"
     #define STRING_DISABLE_STEPPERS       "Disarm All"
-    #define STRING_PRINT                  "Print"
+    #define STRING_PRINT                  "Cut"
     #define STRING_EXTRUDE                "Extrude"
     #define STRING_FAN                    "Fan"
     #define STRING_SETTINGS               "Settings"
