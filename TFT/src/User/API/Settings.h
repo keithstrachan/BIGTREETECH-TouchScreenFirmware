@@ -28,13 +28,13 @@ typedef enum
 
 // Config version support
 // change if new elements/keywords are added/removed/changed in the configuration.h Format YYYYMMDD
-// this number should match the CONFIG_VERSION in configuration.h
-#define CONFIG_SUPPPORT 20201218
+// this number should match CONFIG_VERSION in configuration.h
+#define CONFIG_SUPPPORT 20210105
 
 #define FONT_FLASH_SIGN       20200908 //(YYYYMMDD) change if fonts require updating
-#define CONFIG_FLASH_SIGN     20201221 //(YYYYMMDD) change if any keyword(s) in config.ini is added or removed
-#define LANGUAGE_FLASH_SIGN   20201218 //(YYYYMMDD) change if any keyword(s) in language pack is added or removed
-#define ICON_FLASH_SIGN       20201028 //(YYYYMMDD) change if any icon(s) is added or removed
+#define CONFIG_FLASH_SIGN     20210105 //(YYYYMMDD) change if any keyword(s) in config.ini is added or removed
+#define LANGUAGE_FLASH_SIGN   20210105 //(YYYYMMDD) change if any keyword(s) in language pack is added or removed
+#define ICON_FLASH_SIGN       20210105 //(YYYYMMDD) change if any icon(s) is added or removed
 
 #define FONT_CHECK_SIGN       (FONT_FLASH_SIGN + WORD_UNICODE)
 #define CONFIG_CHECK_SIGN     (CONFIG_FLASH_SIGN + STRINGS_STORE_ADDR)
@@ -63,6 +63,8 @@ typedef enum
 #define DISABLED  0
 #define ENABLED   1
 #define AUTO      2
+#define HIGH      1
+#define LOW       0
 
 typedef enum
 {
@@ -173,6 +175,7 @@ typedef struct
   uint8_t  lcd_idle_brightness;
   uint8_t  lcd_idle_timer;
   uint8_t  xy_offset_probing;
+  uint8_t  z_steppers_alignment;
 
 // Start, End & Cancel G-codes
   uint8_t  send_start_gcode;
@@ -212,9 +215,20 @@ typedef enum
   BL_MBL,  // Mesh Bed Leveling (MBL)
 } BL_TYPE;
 
+/**
+ * Firmware type
+ */
+typedef enum{
+  FW_NOT_DETECTED,
+  FW_UNKNOWN,
+  FW_MARLIN,
+  FW_REPRAPFW,
+  FW_KLIPPER,
+} FW_TYPE;
+
 typedef struct
 {
-  int8_t isMarlinFirmware;
+  FW_TYPE firmwareType;
   uint8_t EEPROM;
   uint8_t autoReportTemp;
   BL_TYPE leveling;

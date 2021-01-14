@@ -204,7 +204,7 @@
     #define STRING_SEND_END_GCODE         "Gcode nach Druck"
     #define STRING_SEND_CANCEL_GCODE      "Gcode bei Abbruch"
     #define STRING_PERSISTENT_STATUS_INFO "Speicherungs-Status"
-    #define STRING_FILE_LISTMODE          "Datein als Liste"
+    #define STRING_FILE_LISTMODE          "Dateien als Liste"
     #define STRING_CURRENT_SETTING        "Treiber Strom (mA)"
     #define STRING_STEPS_SETTING          "Steps pro mm"
     #define STRING_MAXFEEDRATE            "max. Geschwindigkeit"
@@ -295,6 +295,7 @@
     #define STRING_EXT_TEMPLOW            "Hotend temperature is below\nminimum temperature (%d℃)."
     #define STRING_COLD_EXT               "Cold extrusion prevented"
     #define STRING_HEAT_HOTEND            "Heat hotend to %d℃?"
+    #define STRING_Z_ALIGN                "Z Align"
 
 
 #endif
