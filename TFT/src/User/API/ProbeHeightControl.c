@@ -35,23 +35,27 @@ void probeHeightDisable(void)
 }
 
 // Start probe height
-void probeHeightStart(float initialHeight)
+void probeHeightStart(float initialHeight, bool relativeHeight)
 {
-  mustStoreCmd("G90\n");                                  // set absolute position mode
+  if (relativeHeight)
+    probeHeightRelative();                                // set relative position mode
+  else
+    probeHeightAbsolute();                                // set absolute position mode
+
   mustStoreCmd("G1 Z%.2f F%d\n",
                initialHeight,
                infoSettings.level_feedrate[FEEDRATE_Z]);  // move nozzle to provided absolute Z point and set feedrate
-  mustStoreCmd("G91\n");                                  // set relative position mode
+  probeHeightRelative();                                  // set relative position mode
 }
 
 // Stop probe height
 void probeHeightStop(float raisedHeight)
 {
-  mustStoreCmd("G91\n");                                  // set relative position mode
+  probeHeightRelative();                                  // set relative position mode
   mustStoreCmd("G1 Z%.2f F%d\n",
                raisedHeight,
                infoSettings.level_feedrate[FEEDRATE_Z]);  // raise Z and set feedrate
-  mustStoreCmd("G90\n");                                  // set absolute position mode
+  probeHeightAbsolute();                                  // set absolute position mode
 }
 
 // Set probe height to relative position mode
@@ -69,8 +73,7 @@ void probeHeightAbsolute(void)
 // Change probe height
 void probeHeightMove(float unit, int8_t direction)
 {
-  // if invert is true, 'direction' multiplied by -1
-  storeCmd("G1 Z%.2f F%d\n", (infoSettings.invert_axis[Z_AXIS] ? -direction : direction) * unit,
+  storeCmd("G1 Z%.2f F%d\n", unit * direction,
            infoSettings.level_feedrate[FEEDRATE_Z]);
 }
 
@@ -79,7 +82,7 @@ void probeHeightQueryCoord(void)
 {
   if (OS_GetTimeMs() > nextQueryTime)
   {
-    coordinateQuery();
+    coordinateQuery(0);  // query position manually for delay less than 1 second
     nextQueryTime = OS_GetTimeMs() + PROBE_UPDATE_DELAY;
   }
 }

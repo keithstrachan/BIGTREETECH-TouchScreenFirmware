@@ -9,10 +9,12 @@
     #define STRING_TERMINAL_ACK           "Zeige ACK im Terminal"
     #define STRING_PERSISTENT_INFO        "Speicherungs-Status"
     #define STRING_FILE_LIST_MODE         "Dateien als Liste"
+    #define STRING_FILE_SORT_BY           "Sort files by"
     #define STRING_ACK_NOTIFICATION       "ACK - Stil"
+    #define STRING_EMULATE_M600           "Emulate M600"
     #define STRING_SERIAL_ALWAYS_ON       "Seriell Verbind. immer an"
-    #define STRING_MARLIN_SHOW_TITLE      "Marlin Modus Titel anz."
     #define STRING_MARLIN_FULLSCREEN      "Marlin Modus im Vollbild"
+    #define STRING_MARLIN_SHOW_TITLE      "Marlin Modus Titel anz."
     #define STRING_MARLIN_TYPE            "Marlin Modus Typ"
     #define STRING_MOVE_SPEED             "Geschwindigkeit (XYZ)"
     #define STRING_AUTO_LOAD_LEVELING     "Auto Save Load Leveling"
@@ -272,6 +274,7 @@
     #define STRING_ABL_SLOT3              "Slot 3"
     #define STRING_ABL_SLOT_EEPROM        "Slot für den nächsten\nNeustart merken?\n(Im EEPROM speichern)"
     #define STRING_ABL_Z                  "Z Fade"
+    #define STRING_LEVEL_CORNER           "L corner"
     #define STRING_P_OFFSET               "S Versatz"
     #define STRING_H_OFFSET               "0 Versatz"
     #define STRING_DISTANCE               "Abstand"
@@ -345,5 +348,6 @@
     #define STRING_HEAT_HOTEND            "Heize Düse auf %d℃?"
     #define STRING_Z_ALIGN                "Z ausr."
     #define STRING_MACROS                 "Macros"
+    #define STRING_MESH_VALID             "Mesh Validation"
 
 #endif

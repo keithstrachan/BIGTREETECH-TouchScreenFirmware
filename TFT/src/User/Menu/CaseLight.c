@@ -15,10 +15,11 @@ static inline void updateCaseLightIcon(MENUITEMS * curmenu, bool state)
 void caseLightBrightnessReDraw()
 {
   char tempstr[20];
+
   sprintf(tempstr, "  %d%%  ", caseLightGetBrightnessPercent());
-  setLargeFont(true);
+  setFontSize(FONT_SIZE_LARGE);
   GUI_DispStringInPrect(&exhibitRect, (uint8_t *)tempstr);
-  setLargeFont(false);
+  setFontSize(FONT_SIZE_NORMAL);
 }
 
 void menuCaseLight(void)
@@ -71,8 +72,7 @@ void menuCaseLight(void)
         break;
 
       case KEY_ICON_4:
-        caseLightToggleState();
-        menuDrawPage(&caseLightItems);
+        caseLightSetState(!currentCaseLightState);
         caseLightBrightnessReDraw();
         break;
 

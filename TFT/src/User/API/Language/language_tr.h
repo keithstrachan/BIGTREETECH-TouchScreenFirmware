@@ -9,10 +9,12 @@
     #define STRING_TERMINAL_ACK           "Terminalde onay mesajları"
     #define STRING_PERSISTENT_INFO        "Kalıcı Durum Mesajı"
     #define STRING_FILE_LIST_MODE         "Liste Görünümü"
+    #define STRING_FILE_SORT_BY           "Sort files by"
     #define STRING_ACK_NOTIFICATION       "Onay mesajı stili"
+    #define STRING_EMULATE_M600           "Emulate M600"
     #define STRING_SERIAL_ALWAYS_ON       "Seri Bağ. Sürekli Açık"
-    #define STRING_MARLIN_SHOW_TITLE      "Marlin Modu Başlık Desteği"
     #define STRING_MARLIN_FULLSCREEN      "Tam Ekran Marlin Modu"
+    #define STRING_MARLIN_SHOW_TITLE      "Marlin Modu Başlık Desteği"
     #define STRING_MARLIN_TYPE            "Marlin Mode Type"
     #define STRING_MOVE_SPEED             "Hareket Hızı(X Y Z)"
     #define STRING_AUTO_LOAD_LEVELING     "Seviyelemeyi Oto Kaydet/Yükle"
@@ -272,6 +274,7 @@
     #define STRING_ABL_SLOT3              "Yuva 3"
     #define STRING_ABL_SLOT_EEPROM        "Yuvayı hafızaya al?\n(EEPROM a kaydet)"
     #define STRING_ABL_Z                  "Z Etki"
+    #define STRING_LEVEL_CORNER           "L corner"
     #define STRING_P_OFFSET               "P Offset"
     #define STRING_H_OFFSET               "H Offset"
     #define STRING_DISTANCE               "Mesafe"
@@ -345,5 +348,6 @@
     #define STRING_HEAT_HOTEND            "Ekstruderi %d℃ ye ısıt?"
     #define STRING_Z_ALIGN                "Z Hizala"
     #define STRING_MACROS                 "Macros"
+    #define STRING_MESH_VALID             "Mesh Validation"
 
 #endif
