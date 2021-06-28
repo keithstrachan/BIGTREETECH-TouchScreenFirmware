@@ -32,8 +32,8 @@ typedef enum  // popup message types available to display an echo message
 
 typedef struct
 {
-  ECHO_NOTIFY_TYPE  notifyType;
-  const char *const msg;
+  ECHO_NOTIFY_TYPE   notifyType;
+  const char * const msg;
 } ECHO;
 
 // notify or ignore messages starting with following text
@@ -97,7 +97,7 @@ static bool ack_continue_seen(const char * str)
   return false;
 }
 
-static bool ack_cmp(const char *str)
+static bool ack_cmp(const char * str)
 {
   uint16_t i;
   for (i = 0; i < ACK_MAX_SIZE && str[i] != 0 && dmaL2Cache[i] != 0; i++)
@@ -118,7 +118,7 @@ static float ack_value()
 // Read the value after the / if exists
 static float ack_second_value()
 {
-  char *secondValue = strchr(&dmaL2Cache[ack_index], '/');
+  char * secondValue = strchr(&dmaL2Cache[ack_index], '/');
   if (secondValue != NULL)
   {
     return (strtod(secondValue + 1, NULL));
@@ -141,7 +141,7 @@ void ack_values_sum(float *data)
     ack_values_sum(data);
 }
 
-void ackPopupInfo(const char *info)
+void ackPopupInfo(const char * info)
 {
   bool show_dialog = true;
   if (infoMenu.menu[infoMenu.cur] == menuTerminal ||
@@ -206,11 +206,13 @@ bool processKnownEcho(void)
     //if (forceIgnore[i] == 0)
     //{
       if (knownEcho[i].notifyType == ECHO_NOTIFY_TOAST)
+      {
         addToast(DIALOG_TYPE_INFO, dmaL2Cache);
+      }
       else if (knownEcho[i].notifyType == ECHO_NOTIFY_DIALOG)
       {
         BUZZER_PLAY(sound_notify);
-        addNotification(DIALOG_TYPE_INFO, (char*)echomagic, (char*)dmaL2Cache + ack_index, true);
+        addNotification(DIALOG_TYPE_INFO, (char *)echomagic, (char *)dmaL2Cache + ack_index, true);
       }
     //}
   }
@@ -237,32 +239,40 @@ void syncL2CacheFromL1(uint8_t port)
 
 void hostActionCommands(void)
 {
-  char *find = strchr(dmaL2Cache + ack_index, '\n');
+  char * find = strchr(dmaL2Cache + ack_index, '\n');
   *find = '\0';
 
   if (ack_seen(":notification "))
   {
-    statusScreen_setMsg((uint8_t *)echomagic, (uint8_t *)dmaL2Cache + ack_index);  // always display the notification on status screen
+    uint16_t index = ack_index;  // save the current index for further usage
 
-    if (infoSettings.notification_m117 == ENABLED)
+    if (ack_seen("Time Left"))
     {
-      addNotification(DIALOG_TYPE_INFO, (char*)echomagic, (char*)dmaL2Cache + ack_index, false);
+      parsePrintRemainingTime((char *)dmaL2Cache + ack_index);
     }
-
-    if (infoMenu.menu[infoMenu.cur] != menuStatus)  // don't show it when in menuStatus
+    else
     {
-      uint16_t index = ack_index;
+      statusScreen_setMsg((uint8_t *)echomagic, (uint8_t *)dmaL2Cache + index);  // always display the notification on status screen
 
       if (!ack_seen("Ready."))  // avoid to display unneeded/frequent useless notifications (e.g. "My printer Ready.")
-        addToast(DIALOG_TYPE_INFO, dmaL2Cache + index);
+      {
+        if (infoMenu.menu[infoMenu.cur] != menuStatus)  // don't show it when in menuStatus
+          addToast(DIALOG_TYPE_INFO, dmaL2Cache + index);
+
+        if (infoSettings.notification_m117 == ENABLED)
+          addNotification(DIALOG_TYPE_INFO, (char *)echomagic, (char *)dmaL2Cache + index, false);
+      }
     }
   }
   else if (ack_seen(":paused") || ack_seen(":pause"))
   {
-    if (ack_seen(":paused"))  // if paused with ADVANCED_PAUSE_FEATURE enabled in Marlin (:paused),
-      hostDialog = true;      // disable Resume/Pause button in the Printing menu
-    //else                      // otherwise, if ADVANCED_PAUSE_FEATURE is disabled in Marlin (:pause),
-    //  hostDialog = false;     // enable Resume/Pause button in the Printing menu
+    if (infoMachineSettings.firmwareType == FW_MARLIN)
+    {
+      if (ack_seen(":paused"))  // if paused with ADVANCED_PAUSE_FEATURE enabled in Marlin (:paused),
+        hostDialog = true;      // disable Resume/Pause button in the Printing menu
+      //else                      // otherwise, if ADVANCED_PAUSE_FEATURE is disabled in Marlin (:pause),
+      //  hostDialog = false;     // enable Resume/Pause button in the Printing menu
+    }
 
     // pass value "false" to let Marlin report when the host is not
     // printing (when notification ack "Not SD printing" is caught)
@@ -365,7 +375,7 @@ void parseACK(void)
     syncL2CacheFromL1(SERIAL_PORT);
     infoHost.rx_ok[SERIAL_PORT] = false;
 
-    #ifdef SERIAL_DEBUG_PORT
+    #if defined(SERIAL_DEBUG_PORT) && defined(DEBUG_SERIAL_COMM)
       // dump raw serial data received to debug port
       Serial_Puts(SERIAL_DEBUG_PORT, "<<");
       Serial_Puts(SERIAL_DEBUG_PORT, dmaL2Cache);
@@ -557,6 +567,15 @@ void parseACK(void)
           fanSetCurSpeed(i, ack_value());
         }
       }
+      // parse and store flow rate percentage in case of RepRapFirmware
+      else if ((infoMachineSettings.firmwareType == FW_REPRAPFW) && ack_seen("fanPercent\":["))
+      {
+        for (uint8_t i = 0; i < infoSettings.fan_count; i++)
+        {
+          fanSetPercent(i, ack_value() + 0.5f);
+          ack_continue_seen(",");
+        }
+      }
       // parse and store M710, controller fan
       else if (ack_seen("M710"))
       {
@@ -595,7 +614,7 @@ void parseACK(void)
       else if (infoMachineSettings.onboard_sd_support == ENABLED &&
                ack_seen(infoMachineSettings.firmwareType != FW_REPRAPFW ? "File opened:" : "job.file.fileName"))
       {
-        char *fileEndString;
+        char * fileEndString;
         if (infoMachineSettings.firmwareType != FW_REPRAPFW)
         {
           // Marlin
@@ -607,6 +626,7 @@ void parseACK(void)
           ack_seen("result\":\"0:/gcodes/");  // {"key":"job.file.fileName","flags": "","result":"0:/gcodes/pig-4H.gcode"}
           fileEndString = "\"";
         }
+
         uint16_t start_index = ack_index;
         uint16_t end_index = ack_continue_seen(fileEndString) ? (ack_index - strlen(fileEndString)) : start_index;
         uint16_t path_len = MIN(end_index - start_index, MAX_PATH_LEN - strlen(getCurFileSource()) - 1);
@@ -727,16 +747,28 @@ void parseACK(void)
       {
         pidUpdateStatus(false);
       }
-      // parse and store M355, Case light message
-      else if (ack_seen("Case light: OFF"))
+      // parse M303, PID Autotune completed message in case of RRF
+      else if ((infoMachineSettings.firmwareType == FW_REPRAPFW) && ack_seen("Auto tuning heater") && ack_seen("completed"))
       {
-        caseLightSetState(false);
-        caseLightQuerySetWait(false);
+        pidUpdateStatus(true);
       }
-      else if (ack_seen("Case light: "))
+      // parse M303, PID Autotune failed message in case of RRF
+      else if ((infoMachineSettings.firmwareType == FW_REPRAPFW) && (ack_seen("Error: M303") || (ack_seen("Auto tune of heater") && ack_seen("failed"))))
       {
-        caseLightSetState(true);
-        caseLightSetBrightness(ack_value());
+        pidUpdateStatus(false);
+      }
+      // parse and store M355, Case light message
+      else if (ack_seen("Case light:"))
+      {
+        if (ack_seen("OFF"))
+        {
+          caseLightSetState(false);
+        }
+        else
+        {
+          caseLightSetState(true);
+          caseLightSetBrightness(ack_value());
+        }
         caseLightQuerySetWait(false);
       }
       // parse and store M420 V1 T1, Mesh data (e.g. from Mesh Editor menu)
@@ -1130,6 +1162,10 @@ void parseACK(void)
       {
         infoMachineSettings.babyStepping = ack_value();
       }
+      else if (ack_seen("Cap:BUILD_PERCENT:"))  // M73 support. Required "LCD_SET_PROGRESS_MANUALLY" in Marlin
+      {
+        infoMachineSettings.buildPercent = ack_value();
+      }
       else if (ack_seen("Cap:CHAMBER_TEMPERATURE:"))
       {
         infoSettings.chamber_en = ack_value();
@@ -1189,7 +1225,7 @@ void parseACK(void)
       {
         if (ack_seen(errorZProbe))  // smoothieboard ZProbe triggered before move, aborting command.
         {
-          ackPopupInfo("ZProbe triggered\n before move.\n Aborting Print!");
+          ackPopupInfo("ZProbe triggered before move.\nAborting Print!");
         }
         // parse and store volumetric extrusion M200 response of Smoothieware
         else if (ack_seen("Volumetric extrusion is disabled"))
